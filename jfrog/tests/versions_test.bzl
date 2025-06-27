@@ -8,6 +8,7 @@ load("@bazel_skylib//lib:unittest.bzl", "asserts", "unittest")
 
 def _smoke_test_impl(ctx):
     env = unittest.begin(ctx)
+
     # TODO: Replace with actual JFrog functionality tests
     # Example: Test URL validation, authentication handling, etc.
     asserts.equals(env, True, True)  # Placeholder test

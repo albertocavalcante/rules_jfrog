@@ -9,6 +9,7 @@ A Bazel ruleset for publishing build artifacts to JFrog Artifactory generic repo
 **This project is currently under active development and not yet ready for production use.**
 
 ### What's Implemented ✅
+
 - [x] Project structure and template customization complete
 - [x] Bzlmod (MODULE.bazel) support with rules_jfrog module
 - [x] Repository structure following Bazel best practices
@@ -18,6 +19,7 @@ A Bazel ruleset for publishing build artifacts to JFrog Artifactory generic repo
 - [x] Build and test infrastructure working
 
 ### What's Pending 🚧
+
 - [ ] **Core functionality**: `artifactory_generic_publish` rule implementation
 - [ ] **Go-based uploader**: HTTP client for cross-platform artifact uploads
 - [ ] **Authentication**: Bearer token support with environment variable substitution
@@ -118,7 +120,7 @@ rules_jfrog/
 This project was created from a Bazel ruleset template and is being adapted for JFrog Artifactory publishing. The template provided excellent infrastructure for:
 
 - Bzlmod support with proper module extensions
-- Cross-platform CI/CD with GitHub Actions  
+- Cross-platform CI/CD with GitHub Actions
 - Pre-commit hooks for code formatting (buildifier)
 - Automated release processes
 - Comprehensive testing setup
@@ -146,25 +148,28 @@ bazel test //...
 # Update BUILD files
 bazel run //:gazelle
 
-# Format all files  
+# Format all files
 pre-commit run --all-files
 ```
 
 ## Roadmap
 
 ### Phase 1: Core Implementation (Current)
+
 - [ ] Implement `artifactory_generic_publish` rule
 - [ ] Build Go-based HTTP uploader with cross-platform binaries
 - [ ] Add comprehensive error handling and logging
 - [ ] Create basic usage examples
 
 ### Phase 2: Enhanced Features
+
 - [ ] Batch upload support
 - [ ] Checksum verification
 - [ ] Progress reporting for large files
 - [ ] Configuration file support
 
-### Phase 3: Advanced Features  
+### Phase 3: Advanced Features
+
 - [ ] Support for other Artifactory repository types (Maven, npm, Docker)
 - [ ] Artifact downloading/fetching capabilities
 - [ ] Properties and metadata support

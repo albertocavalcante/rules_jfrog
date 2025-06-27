@@ -18,7 +18,7 @@ PLATFORMS = {
     ),
     "darwin_amd64": struct(
         goos = "darwin",
-        goarch = "amd64", 
+        goarch = "amd64",
         binary_name = "jfrog-uploader",
         compatible_with = [
             "@platforms//os:macos",

@@ -4,13 +4,14 @@
 
 Create a Bazel ruleset called `rules_jfrog` that enables teams to publish build artifacts to JFrog Artifactory generic repositories directly from their Bazel build process. This initial version focuses exclusively on **publishing files to generic repositories using bearer token authentication**.
 
-**Project Name**: `rules_jfrog`  
-**Version**: 1.0.0  
-**Target Audience**: Development teams using Bazel build system with JFrog Artifactory  
+**Project Name**: `rules_jfrog`
+**Version**: 1.0.0
+**Target Audience**: Development teams using Bazel build system with JFrog Artifactory
 
 ## Problem Statement
 
 Teams using Bazel for builds often need to publish artifacts (binaries, libraries, configuration files) to JFrog Artifactory as part of their CI/CD pipeline. Currently, this requires:
+
 - Manual upload scripts outside of Bazel
 - Complex CI/CD pipeline configurations
 - Inconsistent artifact publishing processes
@@ -19,9 +20,11 @@ Teams using Bazel for builds often need to publish artifacts (binaries, librarie
 ## Goals and Objectives
 
 ### Primary Goal
+
 Provide a simple, native Bazel rule to publish build artifacts to JFrog Artifactory generic repositories.
 
 ### Success Criteria
+
 - Developers can publish any Bazel target output to Artifactory with a single `bazel run` command
 - Publishing integrates seamlessly with existing Bazel builds
 - Cross-platform compatibility (Linux, macOS, Windows)
@@ -30,31 +33,37 @@ Provide a simple, native Bazel rule to publish build artifacts to JFrog Artifact
 ## User Stories
 
 ### US-001: Basic File Publishing
-**As a** developer  
-**I want to** publish a compiled binary to Artifactory  
-**So that** other teams can download and use the latest version  
+
+**As a** developer
+**I want to** publish a compiled binary to Artifactory
+**So that** other teams can download and use the latest version
 
 **Acceptance Criteria:**
+
 - Can specify source file, target repository URL, and destination path
 - Upload succeeds with proper authentication
 - Build fails if upload fails
 
-### US-002: Configuration File Publishing  
-**As a** DevOps engineer  
-**I want to** publish configuration files to a shared repository  
-**So that** deployment processes can fetch the latest configs  
+### US-002: Configuration File Publishing
+
+**As a** DevOps engineer
+**I want to** publish configuration files to a shared repository
+**So that** deployment processes can fetch the latest configs
 
 **Acceptance Criteria:**
+
 - Can publish any file type (JSON, YAML, binary, etc.)
 - Files are uploaded to specified paths in the repository
 - Process is repeatable and reliable
 
 ### US-003: Secure Authentication
-**As a** security-conscious developer  
-**I want to** authenticate to Artifactory using bearer tokens  
-**So that** my credentials are secure and can be rotated  
+
+**As a** security-conscious developer
+**I want to** authenticate to Artifactory using bearer tokens
+**So that** my credentials are secure and can be rotated
 
 **Acceptance Criteria:**
+
 - Supports bearer token authentication only
 - Tokens can be passed via environment variables
 - No credentials are hardcoded in build files
@@ -62,6 +71,7 @@ Provide a simple, native Bazel rule to publish build artifacts to JFrog Artifact
 ## Functional Requirements
 
 ### FR-001: Publishing Rule
+
 - **Rule Name**: `artifactory_generic_publish`
 - **Purpose**: Upload a single file to Artifactory generic repository
 - **Required Attributes**:
@@ -71,17 +81,20 @@ Provide a simple, native Bazel rule to publish build artifacts to JFrog Artifact
   - `auth_token`: String containing the bearer token for authentication
 
 ### FR-002: Upload Implementation
+
 - Use HTTP PUT method to upload files
 - Set `Authorization: Bearer <token>` header
 - Set appropriate `Content-Type` header
 - Handle upload failures gracefully with clear error messages
 
 ### FR-003: Cross-Platform Support
+
 - Work on Linux, macOS, and Windows
 - Use Go-based HTTP client for consistent cross-platform behavior
 - Single binary approach eliminates platform-specific script dependencies
 
 ### FR-004: Bazel Integration
+
 - Follow Bazel best practices for rule implementation
 - Use Bzlmod (MODULE.bazel) for dependency management
 - Provide clean public API through `defs.bzl`
@@ -90,21 +103,25 @@ Provide a simple, native Bazel rule to publish build artifacts to JFrog Artifact
 ## Non-Functional Requirements
 
 ### NFR-001: Performance
+
 - Upload should be efficient for files up to 1GB
 - Minimal overhead in Bazel build graph analysis
 - No unnecessary file copies during upload
 
 ### NFR-002: Security
+
 - Never log or expose authentication tokens
 - Support environment variable substitution for tokens
 - Fail securely if authentication fails
 
-### NFR-003: Reliability  
+### NFR-003: Reliability
+
 - Retry failed uploads (at least 3 attempts)
 - Provide clear error messages for common failure scenarios
 - Validate inputs before attempting upload
 
 ### NFR-004: Maintainability
+
 - Go-based HTTP upload implementation with Starlark rule definitions
 - Well-documented code with inline comments
 - Follows Bazel style guidelines
@@ -114,6 +131,7 @@ Provide a simple, native Bazel rule to publish build artifacts to JFrog Artifact
 ## Technical Specifications
 
 ### Project Structure
+
 ```
 rules_jfrog/
 ├── MODULE.bazel                 # Bzlmod module definition
@@ -147,11 +165,13 @@ artifactory_generic_publish(
 ### Implementation Requirements
 
 1. **Rule Implementation**:
+
    - Use Bazel's `rule()` function with proper implementation
    - Execute Go binary for upload via `ctx.actions.run()`
    - Pass parameters via command-line arguments to Go binary
 
 2. **HTTP Upload (Go Implementation)**:
+
    - Go-based HTTP client using `net/http` package
    - Cross-platform binary (no shell script dependencies)
    - Consistent behavior across Linux, macOS, and Windows
@@ -178,7 +198,7 @@ cc_binary(
 
 artifactory_generic_publish(
     name = "publish_tool",
-    src = ":my_tool", 
+    src = ":my_tool",
     repository_url = "https://company.jfrog.io/artifactory/tools",
     path = "linux/my-tool/v1.2.3/my-tool",
     auth_token = "$(ARTIFACTORY_TOKEN)",
@@ -213,6 +233,7 @@ bazel run :publish_tool
 ### Platform-Specific Considerations
 
 **All Platforms (Linux/macOS/Windows)**:
+
 - Single Go binary for HTTP uploads
 - Consistent behavior across all platforms
 - No dependency on external tools (curl, PowerShell)
