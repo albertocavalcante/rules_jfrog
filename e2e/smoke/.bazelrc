@@ -1,0 +1,2 @@
+# Match Bazel 7 default behavior
+common --enable_workspace
