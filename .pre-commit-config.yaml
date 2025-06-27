@@ -37,7 +37,7 @@ repos:
       - id: buildifier-lint
   # Enforce that commit messages allow for later changelog generation
   - repo: https://github.com/commitizen-tools/commitizen
-    rev: v4.4.1
+    rev: v4.8.3
     hooks:
       # Requires that commitizen is already installed
       - id: commitizen
@@ -55,6 +55,6 @@ repos:
             .bcr/config.yml
           )
   - repo: https://github.com/crate-ci/typos
-    rev: v1.28.4
+    rev: v1.33.1
     hooks:
       - id: typos
