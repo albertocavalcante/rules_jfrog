@@ -1,7 +1,7 @@
 {
-  "homepage": "https://github.com/myorg/rules_mylang",
+  "homepage": "https://github.com/albertocavalcante/rules_jfrog",
   "maintainers": [],
-  "repository": ["github:myorg/rules_mylang"],
+  "repository": ["github:albertocavalcante/rules_jfrog"],
   "versions": [],
   "yanked_versions": {}
 }

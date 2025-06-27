@@ -1,6 +1,6 @@
 <!-- Generated with Stardoc: http://skydoc.bazel.build -->
 
-Public API re-exports
+Public API for JFrog Artifactory rules
 
 <a id="example"></a>
 
@@ -10,7 +10,7 @@ Public API re-exports
 example()
 </pre>
 
-This is an example
+This is an example - to be replaced with actual JFrog functionality
 
 
 
