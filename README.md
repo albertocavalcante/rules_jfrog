@@ -1,52 +1,190 @@
-# Template for Bazel rules
+# Bazel rules for JFrog Artifactory
 
-Copy this template to create a Bazel ruleset.
+[![CI Status](https://github.com/albertocavalcante/rules_jfrog/workflows/CI/badge.svg)](https://github.com/albertocavalcante/rules_jfrog/actions)
 
-Features:
+A Bazel ruleset for publishing build artifacts to JFrog Artifactory generic repositories.
 
-- follows the official style guide at https://bazel.build/rules/deploying
-- allows for both WORKSPACE.bazel and bzlmod (MODULE.bazel) usage
-- includes Bazel formatting as a pre-commit hook (using [buildifier])
-- includes stardoc API documentation generator
-- includes typical toolchain setup
-- CI configured with GitHub Actions
-- release using GitHub Actions just by pushing a tag
-- the release artifact doesn't need to be built by Bazel, but can still exclude files and stamp the version
+## 🚧 Status: In Development
 
-Ready to get started? Copy this repo, then
+**This project is currently under active development and not yet ready for production use.**
 
-1. search for "com_myorg_rules_mylang" and replace with the name you'll use for your workspace
-1. search for "myorg" and replace with GitHub org
-1. search for "mylang", "Mylang", "MYLANG" and replace with the language/tool your rules are for
-1. rename directory "mylang" similarly
-1. run `pre-commit install` to get lints (see CONTRIBUTING.md)
-1. if you don't need to fetch platform-dependent tools, then remove anything toolchain-related.
-1. (optional) install the [Renovate app](https://github.com/apps/renovate) to get auto-PRs to keep the dependencies up-to-date.
-1. delete this section of the README (everything up to the SNIP).
+### What's Implemented ✅
 
-Optional: if you write tools for your rules to call, you should avoid toolchain dependencies for those tools leaking to all users.
-For example, https://github.com/aspect-build/rules_py actions rely on a couple of binaries written in Rust, but we don't want users to be forced to
-fetch a working Rust toolchain. Instead we want to ship pre-built binaries on our GH releases, and the ruleset fetches these as toolchains.
-See https://blog.aspect.build/releasing-bazel-rulesets-rust for information on how to do this.
-Note that users who _do_ want to build tools from source should still be able to do so, they just need to register a different toolchain earlier.
+- [x] Project structure and template customization complete
+- [x] Bzlmod (MODULE.bazel) support with rules_jfrog module
+- [x] Repository structure following Bazel best practices
+- [x] CI/CD pipeline configuration for albertocavalcante/rules_jfrog
+- [x] Cross-platform architecture planning (Go-based implementation)
+- [x] All template placeholders updated to JFrog-specific naming
+- [x] Build and test infrastructure working
 
----- SNIP ----
+### What's Pending 🚧
 
-# Bazel rules for mylang
+- [ ] **Core functionality**: `artifactory_generic_publish` rule implementation
+- [ ] **Go-based uploader**: HTTP client for cross-platform artifact uploads
+- [ ] **Authentication**: Bearer token support with environment variable substitution
+- [ ] **Error handling**: Comprehensive error reporting and retry logic
+- [ ] **Documentation**: Complete usage examples and API documentation
+- [ ] **Testing**: Unit tests and integration tests
+- [ ] **Release**: First stable release (v1.0.0)
 
-## Installation
+## Overview
 
-From the release you wish to use:
-<https://github.com/myorg/rules_mylang/releases>
-copy the WORKSPACE snippet into your `WORKSPACE` file.
+`rules_jfrog` enables teams to publish build artifacts directly to JFrog Artifactory generic repositories from their Bazel build process. The ruleset uses a **Go-based HTTP client** for consistent cross-platform behavior, eliminating dependencies on external tools like `curl` or PowerShell.
 
-To use a commit rather than a release, you can point at any SHA of the repo.
+### Key Features (Planned)
 
-For example to use commit `abc123`:
+- 🎯 **Simple API**: Single rule for publishing any file to Artifactory
+- 🌐 **Cross-platform**: Works on Linux, macOS, and Windows via Go binary
+- 🔐 **Secure**: Bearer token authentication with environment variable support
+- 📦 **Hermetic**: No external dependencies, self-contained Go binary
+- 🚀 **Fast**: Direct HTTP uploads with proper error handling and retries
+- 🎛️ **Bazel-native**: Integrates seamlessly with Bazel's build graph
 
-1. Replace `url = "https://github.com/myorg/rules_mylang/releases/download/v0.1.0/rules_mylang-v0.1.0.tar.gz"` with a GitHub-provided source archive like `url = "https://github.com/myorg/rules_mylang/archive/abc123.tar.gz"`
-1. Replace `strip_prefix = "rules_mylang-0.1.0"` with `strip_prefix = "rules_mylang-abc123"`
-1. Update the `sha256`. The easiest way to do this is to comment out the line, then Bazel will
-   print a message with the correct value. Note that GitHub source archives don't have a strong
-   guarantee on the sha256 stability, see
-   <https://github.blog/2023-02-21-update-on-the-future-stability-of-source-code-archives-and-hashes/>
+## Planned Usage
+
+> ⚠️ **Note**: This is the intended API design. Implementation is still in progress.
+
+### Installation (Future)
+
+Add to your `MODULE.bazel`:
+
+```starlark
+bazel_dep(name = "rules_jfrog", version = "1.0.0")
+```
+
+### Basic Usage (Future)
+
+```starlark
+# In your BUILD.bazel file
+load("@rules_jfrog//jfrog:defs.bzl", "artifactory_generic_publish")
+
+cc_binary(
+    name = "my_app",
+    srcs = ["main.cc"],
+)
+
+artifactory_generic_publish(
+    name = "publish_app",
+    src = ":my_app",
+    repository_url = "https://company.jfrog.io/artifactory/generic-local",
+    path = "releases/my-app/v1.0.0/my-app-linux",
+    auth_token = "$(ARTIFACTORY_TOKEN)",
+)
+```
+
+```bash
+# Set your authentication token
+export ARTIFACTORY_TOKEN="your-bearer-token-here"
+
+# Publish the artifact
+bazel run :publish_app
+```
+
+## Architecture
+
+### Go-Based Implementation
+
+Unlike traditional shell-script based approaches, `rules_jfrog` uses a **Go binary** for HTTP uploads:
+
+- **Consistent behavior** across all platforms (Linux, macOS, Windows)
+- **No external dependencies** on `curl`, `wget`, or PowerShell
+- **Better error handling** with structured error messages and exit codes
+- **HTTP/2 support** with connection reuse and proper timeout handling
+
+### Project Structure
+
+```
+rules_jfrog/
+├── MODULE.bazel                 # Bzlmod module definition
+├── jfrog/
+│   ├── defs.bzl                # Public API exports
+│   ├── publish.bzl             # Publishing rule implementation (TODO)
+│   └── private/
+│       ├── toolchains_repo.bzl # Platform detection & Go binary management
+│       └── uploader/           # Go-based HTTP uploader (TODO)
+│           ├── main.go         # HTTP upload implementation
+│           ├── go.mod          # Go module definition
+│           └── BUILD.bazel     # Bazel build for Go binary
+├── e2e/smoke/                  # Integration tests
+├── examples/                   # Usage examples (TODO)
+├── docs/                       # Documentation
+├── README.md                   # This file
+├── PRD.md                      # Product Requirements Document
+├── CONTRIBUTING.md             # Contribution guidelines
+└── LICENSE                     # License file
+```
+
+## Development Status
+
+This project was created from a Bazel ruleset template and is being adapted for JFrog Artifactory publishing. The template provided excellent infrastructure for:
+
+- Bzlmod support with proper module extensions
+- Cross-platform CI/CD with GitHub Actions
+- Pre-commit hooks for code formatting (buildifier)
+- Automated release processes
+- Comprehensive testing setup
+
+### Current Development Phase
+
+The **template customization phase is complete** ✅. All placeholder references have been updated and the project structure is ready for implementation. The next major milestone is implementing the actual publishing functionality with the Go-based HTTP uploader.
+
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for development setup and contribution guidelines.
+
+### Development Commands
+
+```bash
+# Install pre-commit hooks for formatting
+pre-commit install
+
+# Build all targets
+bazel build //...
+
+# Run all tests (when implemented)
+bazel test //...
+
+# Update BUILD files
+bazel run //:gazelle
+
+# Format all files
+pre-commit run --all-files
+```
+
+## Roadmap
+
+### Phase 1: Core Implementation (Current)
+
+- [ ] Implement `artifactory_generic_publish` rule
+- [ ] Build Go-based HTTP uploader with cross-platform binaries
+- [ ] Add comprehensive error handling and logging
+- [ ] Create basic usage examples
+
+### Phase 2: Enhanced Features
+
+- [ ] Batch upload support
+- [ ] Checksum verification
+- [ ] Progress reporting for large files
+- [ ] Configuration file support
+
+### Phase 3: Advanced Features
+
+- [ ] Support for other Artifactory repository types (Maven, npm, Docker)
+- [ ] Artifact downloading/fetching capabilities
+- [ ] Properties and metadata support
+- [ ] Advanced retry and resilience features
+
+## License
+
+This project is licensed under the [Apache License 2.0](LICENSE).
+
+## Support
+
+- 📖 **Documentation**: See [docs/](docs/) directory
+- 🐛 **Issues**: Report bugs and feature requests via [GitHub Issues](https://github.com/albertocavalcante/rules_jfrog/issues)
+- 💬 **Discussions**: Join conversations in [GitHub Discussions](https://github.com/albertocavalcante/rules_jfrog/discussions)
+
+---
+
+**Note**: This README will be updated as development progresses. Check back frequently for the latest status and usage instructions.
